@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { ContractGewijzigd } from '@/types/types'
+import type { ContractGewijzigd, WerknemersStatuut, TypeContract } from '@/types/types'
 import { useCreateContract } from '@/hooks/useContracten'
 import { useAllPersonen } from '@/hooks/usePersonen'
 
@@ -62,12 +62,12 @@ function NieuwContractForm({ onSuccess, onClose }: { onSuccess: (id: string, per
           EindDatum: null,
           ParitairComite: '2000000',
           Gewest: 'Vlaanderen',
-          WerknemersStatuut: statuut as any,
+          WerknemersStatuut: statuut as WerknemersStatuut,
           Functie: 'Nieuwe medewerker',
           TypeWerknemerDimona: 'EXT',
           Tikkaartnummer: null,
           Arbeidsstelsel: 'Voltijds',
-          TypeContract: typeContract as any,
+          TypeContract: typeContract as TypeContract,
           VerloningsPeriodiciteit: 'Maandelijks',
           Bezoldigingswijze: 'MaandLoon',
           VoltijdsReferentieRegime: 38,
