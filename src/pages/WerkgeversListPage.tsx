@@ -13,7 +13,7 @@ import {
 } from '@tanstack/react-table'
 import { Building2, Plus, ChevronUp, ChevronDown, ChevronsUpDown, ArrowRight } from 'lucide-react'
 import { useWerkgevers, useCreateWerkgever } from '@/hooks/useWerkgevers'
-import { werkgeverPath } from '@/config/routes'
+import { werkgeverPath, ROUTES } from '@/config/routes'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { DeleteButton } from '@/components/common/DeleteButton'
 import { Button } from '@/components/ui/button'
@@ -214,10 +214,17 @@ export default function WerkgeversListPage() {
   // Clear query param when dialog closes to prevent reopening on refresh
   const handleOpenChange = (open: boolean) => {
     setDialogOpen(open)
-    if (!open && searchParams.has('action')) {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.delete('action')
-      setSearchParams(newParams, { replace: true })
+    if (!open) {
+      if (searchParams.get('trigger') === 'dashboard') {
+        const h1 = document.querySelector('h1')?.textContent;
+        console.log('[DASHBOARD] Returning from Werkgevers with content:', h1);
+        navigate(ROUTES.DASHBOARD)
+      } else if (searchParams.has('action')) {
+        const newParams = new URLSearchParams(searchParams)
+        newParams.delete('action')
+        newParams.delete('trigger')
+        setSearchParams(newParams, { replace: true })
+      }
     }
   }
   const rows: WerkgeverRij[] = useMemo(() => (data ?? []).map(toRij), [data])

@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { ROUTES, persoonPath } from '@/config/routes'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import {
   Dialog,
   DialogContent,
@@ -14,9 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useWerkgevers } from '@/hooks/useWerkgevers'
-import { useCreatePersoon } from '@/hooks/usePersonen'
-import { useSearchParams } from 'react-router-dom'
 import {
   useReactTable,
   getCoreRowModel,
@@ -28,8 +27,8 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 import { Users, ArrowRight, UserPlus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { persoonPath } from '@/config/routes'
+import { useWerkgevers } from '@/hooks/useWerkgevers'
+import { useCreatePersoon } from '@/hooks/usePersonen'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -160,10 +159,15 @@ export default function PersonenListPage() {
 
   const handleOpenChange = (open: boolean) => {
     setDialogOpen(open)
-    if (!open && searchParams.has('action')) {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.delete('action')
-      setSearchParams(newParams, { replace: true })
+    if (!open) {
+      if (searchParams.get('trigger') === 'dashboard') {
+        navigate(ROUTES.DASHBOARD)
+      } else if (searchParams.has('action')) {
+        const newParams = new URLSearchParams(searchParams)
+        newParams.delete('action')
+        newParams.delete('trigger')
+        setSearchParams(newParams, { replace: true })
+      }
     }
   }
   

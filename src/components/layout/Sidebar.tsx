@@ -36,8 +36,8 @@ export function Sidebar() {
         <div className="bg-white px-2 py-1.5 rounded shadow-sm inline-block">
           <img src="/prato-logo.webp" alt="Prato" className="h-6 w-auto" />
         </div>
-        <span className="w-full text-lg text-white uppercase tracking-widest font-bold">
-          midoffice fix
+        <span className="w-full text-xl text-white uppercase tracking-[0.2em] font-extrabold mt-1">
+          {t('branding.name', 'Midoffice Fix')}
         </span>
       </div>
 

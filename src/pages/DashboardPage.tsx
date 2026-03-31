@@ -78,7 +78,7 @@ export default function DashboardPage() {
           icon={<Building2 className="h-5 w-5 text-blue-500" />}
           link={ROUTES.WERKGEVERS}
           actionLabel="Nieuwe werkgever"
-          onAction={() => navigate(ROUTES.WERKGEVERS + '?action=new')}
+          onAction={() => navigate(ROUTES.WERKGEVERS + '?action=new&trigger=dashboard')}
         />
         <KPICard
           title={t('dashboard.kpi_actieve_personen')}
@@ -86,7 +86,7 @@ export default function DashboardPage() {
           icon={<Users className="h-5 w-5 text-green-500" />}
           link={ROUTES.PERSONEN_LIST}
           actionLabel="Nieuwe persoon"
-          onAction={() => navigate(ROUTES.PERSONEN_LIST + '?action=new')}
+          onAction={() => navigate(ROUTES.PERSONEN_LIST + '?action=new&trigger=dashboard')}
         />
         <KPICard
           title={t('dashboard.kpi_actieve_contracten')}
@@ -94,7 +94,7 @@ export default function DashboardPage() {
           icon={<FileText className="h-5 w-5 text-purple-500" />}
           link={ROUTES.CONTRACTEN_LIST}
           actionLabel="Nieuw contract"
-          onAction={() => navigate(ROUTES.CONTRACTEN_LIST + '?action=new')}
+          onAction={() => navigate(ROUTES.CONTRACTEN_LIST + '?action=new&trigger=dashboard')}
         />
         <KPICard
           title={t('dashboard.kpi_draft_loonberekeningen')}
@@ -102,7 +102,7 @@ export default function DashboardPage() {
           icon={<Calculator className="h-5 w-5 text-orange-500" />}
           link={ROUTES.LOONBEREKENINGEN_LIST}
           actionLabel="Nieuwe berekening"
-          onAction={() => navigate(ROUTES.LOONBEREKENINGEN_LIST + '?action=new')}
+          onAction={() => navigate(ROUTES.LOONBEREKENINGEN_LIST + '?action=new&trigger=dashboard')}
         />
       </div>
 

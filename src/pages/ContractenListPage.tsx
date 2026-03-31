@@ -11,9 +11,9 @@ import {
   type SortingState,
   flexRender,
 } from '@tanstack/react-table'
-import { FileText, ArrowRight, Plus } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { contractPath } from '@/config/routes'
+import { ROUTES, contractPath } from '@/config/routes'
+import { FileText, ArrowRight, Plus } from 'lucide-react'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -176,10 +176,15 @@ export default function ContractenListPage() {
 
   const handleOpenChange = (open: boolean) => {
     setDialogOpen(open)
-    if (!open && searchParams.has('action')) {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.delete('action')
-      setSearchParams(newParams, { replace: true })
+    if (!open) {
+      if (searchParams.get('trigger') === 'dashboard') {
+        navigate(ROUTES.DASHBOARD)
+      } else if (searchParams.has('action')) {
+        const newParams = new URLSearchParams(searchParams)
+        newParams.delete('action')
+        newParams.delete('trigger')
+        setSearchParams(newParams, { replace: true })
+      }
     }
   }
   

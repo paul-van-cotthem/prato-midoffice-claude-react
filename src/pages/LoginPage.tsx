@@ -12,13 +12,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      void navigate(ROUTES.WERKGEVERS, { replace: true })
+      void navigate(ROUTES.DASHBOARD, { replace: true })
     }
   }, [isAuthenticated, navigate])
 
   function handleLogin() {
     login()
-    void navigate(ROUTES.WERKGEVERS, { replace: true })
+    void navigate(ROUTES.DASHBOARD, { replace: true })
   }
 
   return (

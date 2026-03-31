@@ -1,4 +1,7 @@
 {
+  "branding": {
+    "name": "Midoffice Fix"
+  },
   "common": {
     "opslaan": "Opslaan",
     "annuleren": "Annuleren",
