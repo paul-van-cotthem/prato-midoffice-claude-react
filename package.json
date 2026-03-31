@@ -1,7 +1,7 @@
 {
   "name": "prato-claude-react",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Prato Midoffice UI - Light Theme & High Contrast Update",
   "//": "Git commit test",
   "type": "module",
@@ -14,7 +14,9 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write src",
     "test": "vitest",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "version:bump": "node scripts/bump-version.mjs",
+    "version:check": "node -e \"const pkg=require('./package.json'); const ver=require('./src/config/version.ts').APP_VERSION; if(pkg.version!==ver) { console.error('Version mismatch!', pkg.version, 'vs', ver); process.exit(1); } else { console.log('Version consistent: v' + pkg.version); }\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
