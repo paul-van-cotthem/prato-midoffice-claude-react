@@ -1,5 +1,6 @@
 export const ROUTES = {
   LOGIN: '/login',
+  DASHBOARD: '/',
   WERKGEVERS: '/werkgevers',
   WERKGEVER: '/werkgevers/:werkgeverReferentieId',
   LONEN_OVERZICHT: '/werkgevers/:werkgeverReferentieId/lonen',

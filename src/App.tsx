@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from 'sonner'
@@ -9,6 +9,7 @@ import LoginPage from '@/pages/LoginPage'
 import { ROUTES } from '@/config/routes'
 import { Skeleton } from '@/components/ui/skeleton'
 
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const WerkgeversListPage = lazy(() => import('@/pages/WerkgeversListPage'))
 const WerkgeverPage = lazy(() => import('@/pages/WerkgeverPage'))
 const OverzichtLonenPage = lazy(() => import('@/pages/OverzichtLonenPage'))
@@ -59,7 +60,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to={ROUTES.WERKGEVERS} replace />,
+        element: withErrorBoundary(
+          <Suspense fallback={<PageSkeleton />}>
+            <DashboardPage />
+          </Suspense>,
+        ),
       },
       {
         path: ROUTES.WERKGEVERS,

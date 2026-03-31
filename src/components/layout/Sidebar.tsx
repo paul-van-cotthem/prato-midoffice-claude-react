@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Building2, MessageSquare, LogOut, Users, FileText, Calculator } from 'lucide-react'
+import { LayoutDashboard, Building2, MessageSquare, LogOut, Users, FileText, Calculator } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ROUTES } from '@/config/routes'
 import { useAuth } from '@/hooks/useAuth'
@@ -39,6 +39,23 @@ export function Sidebar() {
 
       {/* Nav links */}
       <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
+        <NavLink
+          to={ROUTES.DASHBOARD}
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white',
+              isActive
+                ? 'bg-white/10 text-white'
+                : 'text-gray-400 hover:bg-white/5 hover:text-white',
+            )
+          }
+          end
+        >
+          <LayoutDashboard className="h-5 w-5 flex-shrink-0" />
+          {t('nav.dashboard')}
+        </NavLink>
+
         <NavLink
           to={ROUTES.WERKGEVERS}
           className={({ isActive }) =>

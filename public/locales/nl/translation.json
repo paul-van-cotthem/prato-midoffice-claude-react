@@ -28,6 +28,7 @@
     "onopgeslagen_wijzigingen_tekst": "U heeft onopgeslagen wijzigingen. Wilt u verdergaan zonder op te slaan?"
   },
   "nav": {
+    "dashboard": "Dashboard",
     "werkgevers": "Werkgevers",
     "berichten": "Berichtenlog",
     "personen": "Personen",
@@ -35,6 +36,18 @@
     "loonberekening": "Loonberekeningen",
     "afmelden": "Afmelden",
     "navigatie": "Navigatie"
+  },
+  "dashboard": {
+    "titel": "Dashboard",
+    "ondertitel": "Overzicht van uw Midoffice activiteiten",
+    "kpi_werkgevers": "Werkgevers",
+    "kpi_actieve_contracten": "Actieve Contracten",
+    "kpi_actieve_personen": "Actieve Personen",
+    "kpi_draft_loonberekeningen": "Draft Loonberekeningen",
+    "acties_titel": "Aandacht vereist",
+    "recente_activiteit_titel": "Recente Activiteiten",
+    "geen_acties": "Rustige dag, u bent helemaal bij!",
+    "geen_activiteit": "Geen recente activiteit."
   },
   "login": {
     "titel": "Prato Midoffice MVP",
