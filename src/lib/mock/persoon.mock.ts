@@ -8,6 +8,11 @@ function getAll(): PersoonGewijzigd[] {
   return loadFromStorage<PersoonGewijzigd[]>(STORAGE_KEYS.PERSONEN, personenData)
 }
 
+export async function fetchAllPersonen(): Promise<PersoonGewijzigd[]> {
+  await delay()
+  return getAll()
+}
+
 export async function fetchPersonen(werkgeverId: string): Promise<PersoonGewijzigd[]> {
   await delay()
   return getAll().filter((p) => p.WerkgeverReferentieId === werkgeverId)

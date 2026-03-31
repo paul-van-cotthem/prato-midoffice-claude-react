@@ -68,38 +68,41 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-prato-blue">{t('dashboard.titel')}</h1>
           <p className="text-sm text-prato-text-muted mt-1">{t('dashboard.ondertitel')}</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => navigate(ROUTES.WERKGEVERS)} className="btn-primary">
-            {t('werkgevers.nieuw')}
-          </Button>
-        </div>
       </div>
 
       {/* KPI Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
         <KPICard
           title={t('dashboard.kpi_werkgevers')}
           value={loadingWerkgevers ? null : countWerkgevers}
           icon={<Building2 className="h-5 w-5 text-blue-500" />}
           link={ROUTES.WERKGEVERS}
+          actionLabel="Nieuwe werkgever"
+          onAction={() => navigate(ROUTES.WERKGEVERS + '?action=new')}
         />
         <KPICard
           title={t('dashboard.kpi_actieve_personen')}
           value={loadingPersonen ? null : countPersonen}
           icon={<Users className="h-5 w-5 text-green-500" />}
           link={ROUTES.PERSONEN_LIST}
+          actionLabel="Nieuwe persoon"
+          onAction={() => navigate(ROUTES.PERSONEN_LIST + '?action=new')}
         />
         <KPICard
           title={t('dashboard.kpi_actieve_contracten')}
           value={loadingContracten ? null : countContracten}
           icon={<FileText className="h-5 w-5 text-purple-500" />}
           link={ROUTES.CONTRACTEN_LIST}
+          actionLabel="Nieuw contract"
+          onAction={() => navigate(ROUTES.CONTRACTEN_LIST + '?action=new')}
         />
         <KPICard
           title={t('dashboard.kpi_draft_loonberekeningen')}
           value={loadingLonen ? null : countLonen}
           icon={<Calculator className="h-5 w-5 text-orange-500" />}
           link={ROUTES.LOONBEREKENINGEN_LIST}
+          actionLabel="Nieuwe berekening"
+          onAction={() => navigate(ROUTES.LOONBEREKENINGEN_LIST + '?action=new')}
         />
       </div>
 
@@ -175,25 +178,46 @@ export default function DashboardPage() {
   )
 }
 
-function KPICard({ title, value, icon, link }: { title: string; value: number | null; icon: React.ReactNode; link: string }) {
+function KPICard({
+  title,
+  value,
+  icon,
+  link,
+  actionLabel,
+  onAction,
+}: {
+  title: string
+  value: number | null
+  icon: React.ReactNode
+  link: string
+  actionLabel?: string
+  onAction?: () => void
+}) {
   return (
-    <Link
-      to={link}
-      className="prato-card hover:border-prato-blue/40 transition-colors flex items-center justify-between p-5 border border-prato-border/50 group"
-    >
-      <div>
-        <p className="text-sm font-medium text-prato-text-muted mb-1">{title}</p>
-        <div className="flex items-center gap-2">
-          {value === null ? (
-            <Skeleton className="h-8 w-16" />
-          ) : (
-            <span className="text-2xl font-bold text-prato-text">{value}</span>
-          )}
+    <div className="flex flex-col gap-3 h-full">
+      <Link
+        to={link}
+        className="prato-card hover:border-prato-blue/40 transition-colors flex items-center justify-between p-5 border border-prato-border/50 group flex-1"
+      >
+        <div>
+          <p className="text-sm font-medium text-prato-text-muted mb-1">{title}</p>
+          <div className="flex items-center gap-2">
+            {value === null ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <span className="text-2xl font-bold text-prato-text">{value}</span>
+            )}
+          </div>
         </div>
-      </div>
-      <div className="p-3 bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors">
-        {icon}
-      </div>
-    </Link>
+        <div className="p-3 bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors">
+          {icon}
+        </div>
+      </Link>
+      {actionLabel && onAction && (
+        <Button variant="outline" size="sm" onClick={onAction} className="w-full text-xs font-semibold py-2">
+          {actionLabel}
+        </Button>
+      )}
+    </div>
   )
 }

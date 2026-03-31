@@ -2,6 +2,22 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useWerkgevers } from '@/hooks/useWerkgevers'
+import { useCreatePersoon } from '@/hooks/usePersonen'
+import { useSearchParams } from 'react-router-dom'
+import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
@@ -19,9 +35,137 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { PersoonGewijzigd } from '@/types/types'
 
+function NieuwPersoonForm({ onSuccess, onClose }: { onSuccess: (id: string, werkgeverId: string) => void, onClose: () => void }) {
+  const { t } = useTranslation()
+  const createMutation = useCreatePersoon()
+  const { data: werkgevers } = useWerkgevers()
+
+  const [werkgeverId, setWerkgeverId] = useState('')
+  const [voornaam, setVoornaam] = useState('')
+  const [familieNaam, setFamilieNaam] = useState('')
+  const [insz, setInsz] = useState('')
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!werkgeverId || !voornaam.trim() || !familieNaam.trim()) return
+
+    const nieuwPersoon: PersoonGewijzigd = {
+      WerkgeverReferentieId: werkgeverId,
+      PersoonReferentieId: '',
+      RecordDatum: new Date().toISOString(),
+      PersoonSnapshots: [
+        {
+          AanvangsDatum: new Date().toISOString().slice(0, 10),
+          Werknemerskengetallen: [],
+          DatumInDienst: null,
+          GepensioneerdVanaf: null,
+          Voornaam: voornaam.trim(),
+          FamilieNaam: familieNaam.trim(),
+          Geboortedatum: '1990-01-01',
+          Geslacht: 'X',
+          BurgerlijkeStaat: 'Ongehuwd',
+          INSZNummer: insz.trim(),
+          GeboortePlaats: '',
+          Straat: '',
+          Huisnummer: '',
+          Bus: null,
+          Gemeente: '',
+          PostCode: '',
+          Land: 'België',
+          IBAN: null,
+          BIC: null,
+          TypeBvBerekening: null,
+          VastBvPercentage: null,
+          Mindervalide: false,
+          PartnerInkomsten: 'GeenEigenInkomsten',
+          PartnerMindervalide: false,
+          AantalKinderenTenLaste: 0,
+          AantalMindervalideKinderenTenLaste: 0,
+          AantalOuderePersonenTenLaste: 0,
+          AantalMindervalideOuderePersonenTenLaste: 0,
+          AantalAnderePersonenTenLaste: 0,
+          AantalAndereMindervalidePersonenTenLaste: 0,
+          AantalZorgbehoevendeOuderePersonenTenLaste: 0,
+          Taal: 'Nederlands',
+          EmailLoonbrief: null,
+        },
+      ],
+    }
+
+    createMutation.mutate(nieuwPersoon, {
+      onSuccess: (data) => {
+        onSuccess(data.PersoonReferentieId, data.WerkgeverReferentieId)
+      },
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-foreground">Werkgever</label>
+        <Select value={werkgeverId} onValueChange={setWerkgeverId}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Selecteer werkgever..." />
+          </SelectTrigger>
+          <SelectContent>
+            {werkgevers?.map(w => (
+              <SelectItem key={w.WerkgeverReferentieId} value={w.WerkgeverReferentieId}>
+                {w.WerkgeverSnapshots.at(-1)?.MaatschappelijkeNaam || w.WerkgeverReferentieId}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-foreground">{t('persoon.veld_voornaam', 'Voornaam')}</label>
+        <Input value={voornaam} onChange={e => setVoornaam(e.target.value)} placeholder="Jan" />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-foreground">{t('persoon.veld_familieNaam', 'Familienaam')}</label>
+        <Input value={familieNaam} onChange={e => setFamilieNaam(e.target.value)} placeholder="Peeters" />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-foreground">{t('persoon.veld_inszNummer', 'INSZ Nummer')}</label>
+        <Input value={insz} onChange={e => setInsz(e.target.value)} placeholder="80.01.01-123.45" />
+      </div>
+
+      <div className="flex justify-end gap-3 pt-2 border-t mt-2">
+        <Button type="button" variant="outline" onClick={onClose} className="px-6">
+          {t('common.annuleren')}
+        </Button>
+        <Button 
+          type="submit" 
+          disabled={createMutation.isPending || !werkgeverId || !voornaam.trim() || !familieNaam.trim()}
+          className="px-6 min-w-[120px] btn-primary"
+        >
+          {createMutation.isPending ? (
+            <div className="flex items-center gap-2">
+              <LoadingSpinner size="sm" className="text-white" />
+              {t('common.aanmakenBezig')}
+            </div>
+          ) : (
+            t('common.aanmaken')
+          )}
+        </Button>
+      </div>
+    </form>
+  )
+}
+
 export default function PersonenListPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [dialogOpen, setDialogOpen] = useState(searchParams.get('action') === 'new')
+
+  const handleOpenChange = (open: boolean) => {
+    setDialogOpen(open)
+    if (!open && searchParams.has('action')) {
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('action')
+      setSearchParams(newParams, { replace: true })
+    }
+  }
   
   const { data, isLoading } = useQuery({
     queryKey: ['personen-global'],
@@ -92,10 +236,27 @@ export default function PersonenListPage() {
           </div>
           <h1 className="text-2xl font-bold text-primary">{t('nav.personen')}</h1>
         </div>
-        <Button disabled>
-          <UserPlus className="mr-2 h-4 w-4" />
-          {t('common.toevoegen')}
-        </Button>
+        <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
+          <Button className="btn-primary" onClick={() => setDialogOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            {t('common.toevoegen')}
+          </Button>
+          <DialogContent className="max-w-md bg-[var(--color-bg-page)] text-foreground border-border shadow-xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-prato-blue">
+                Nieuwe Persoon
+              </DialogTitle>
+            </DialogHeader>
+            <NieuwPersoonForm 
+              onClose={() => setDialogOpen(false)}
+              onSuccess={(id, werkgeverId) => {
+                setDialogOpen(false)
+                // Option: Navigate immediately to the new person's details
+                navigate(persoonPath(werkgeverId, id))
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="prato-card p-0">

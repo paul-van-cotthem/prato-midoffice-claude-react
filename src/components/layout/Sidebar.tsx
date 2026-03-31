@@ -30,11 +30,15 @@ export function Sidebar() {
     >
       {/* Prato brand */}
       <div
-        className="flex h-16 items-center px-6"
+        className="flex flex-col items-start justify-center py-6 px-6 gap-3 text-left"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
       >
-        <span className="prato-brand text-lg">PRATO</span>
-        <span className="ml-2 text-xs text-gray-400 uppercase tracking-wider">midoffice</span>
+        <div className="bg-white px-2 py-1.5 rounded shadow-sm inline-block">
+          <img src="/prato-logo.webp" alt="Prato" className="h-6 w-auto" />
+        </div>
+        <span className="w-full text-lg text-white uppercase tracking-widest font-bold">
+          midoffice fix
+        </span>
       </div>
 
       {/* Nav links */}

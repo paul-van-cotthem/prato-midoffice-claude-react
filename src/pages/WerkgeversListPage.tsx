@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   useReactTable,
@@ -208,7 +208,18 @@ export default function WerkgeversListPage() {
   const { data, isLoading, isError, error } = useWerkgevers()
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState('')
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [dialogOpen, setDialogOpen] = useState(searchParams.get('action') === 'new')
+
+  // Clear query param when dialog closes to prevent reopening on refresh
+  const handleOpenChange = (open: boolean) => {
+    setDialogOpen(open)
+    if (!open && searchParams.has('action')) {
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('action')
+      setSearchParams(newParams, { replace: true })
+    }
+  }
   const rows: WerkgeverRij[] = useMemo(() => (data ?? []).map(toRij), [data])
 
   const columns: ColumnDef<WerkgeverRij>[] = useMemo(
@@ -310,7 +321,7 @@ export default function WerkgeversListPage() {
           </h1>
         </div>
 
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
           <Button 
             className="btn-primary"
             onClick={() => {

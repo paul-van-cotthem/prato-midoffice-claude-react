@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   useReactTable,
@@ -17,11 +17,171 @@ import { contractPath } from '@/config/routes'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { ContractGewijzigd } from '@/types/types'
+import { useCreateContract } from '@/hooks/useContracten'
+import { useAllPersonen } from '@/hooks/usePersonen'
+
+function NieuwContractForm({ onSuccess, onClose }: { onSuccess: (id: string, persoonId: string, werkgeverId: string) => void, onClose: () => void }) {
+  const { t } = useTranslation()
+  const createMutation = useCreateContract()
+  const { data: personen } = useAllPersonen()
+
+  const [persoonDef, setPersoonDef] = useState('') // Combines persoonId|werkgeverId
+  const [startDatum, setStartDatum] = useState(new Date().toISOString().slice(0, 10))
+  const [typeContract, setTypeContract] = useState('OnbepaaldeDuur')
+  const [statuut, setStatuut] = useState('Bediende')
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!persoonDef) return
+
+    const [persoonId, werkgeverId] = persoonDef.split('|') as [string, string]
+
+    const nieuwContract: ContractGewijzigd = {
+      ContractReferentieId: '',
+      PersoonReferentieId: persoonId,
+      WerkgeverReferentieId: werkgeverId,
+      RecordDatum: new Date().toISOString(),
+      ContractSnapshots: [
+        {
+          AanvangsDatum: startDatum,
+          BeginDatum: startDatum,
+          EindDatum: null,
+          ParitairComite: '2000000',
+          Gewest: 'Vlaanderen',
+          WerknemersStatuut: statuut as any,
+          Functie: 'Nieuwe medewerker',
+          TypeWerknemerDimona: 'EXT',
+          Tikkaartnummer: null,
+          Arbeidsstelsel: 'Voltijds',
+          TypeContract: typeContract as any,
+          VerloningsPeriodiciteit: 'Maandelijks',
+          Bezoldigingswijze: 'MaandLoon',
+          VoltijdsReferentieRegime: 38,
+          TypeForfait: 'Geen',
+          Taalgebied: 'Nederlandstalig',
+          LoonBedrag: 2500,
+          LoonMunt: 'EUR',
+          WerkgeversbijdrageMaaltijdcheque: null,
+          MaaltijdchequesManueelToegekend: false,
+          StarterJob: false,
+          VrijstellingPloegenarbeid: false,
+          VrijstellingNachtarbeid: false,
+          VrijstellingVolContinu: false,
+          VrijstellingOnroerendeStaat: false,
+          VrijstellingPloegenarbeidBIS: false,
+          VrijstellingVolContinuBIS: false,
+          BuitenlandseLoonbelasting: false,
+          NotieLaattijdigeFlexi: false,
+        },
+      ],
+    }
+
+    createMutation.mutate(nieuwContract, {
+      onSuccess: (data) => {
+        onSuccess(data.ContractReferentieId, data.PersoonReferentieId, data.WerkgeverReferentieId)
+      },
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-foreground">Persoon</label>
+        <Select value={persoonDef} onValueChange={setPersoonDef}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Selecteer persoon..." />
+          </SelectTrigger>
+          <SelectContent>
+            {personen?.map(p => (
+              <SelectItem key={p.PersoonReferentieId} value={`${p.PersoonReferentieId}|${p.WerkgeverReferentieId}`}>
+                {p.PersoonSnapshots.at(-1)?.Voornaam} {p.PersoonSnapshots.at(-1)?.FamilieNaam}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-foreground">Startdatum</label>
+        <Input type="date" value={startDatum} onChange={e => setStartDatum(e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-foreground">Type Contract</label>
+        <Select value={typeContract} onValueChange={setTypeContract}>
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="OnbepaaldeDuur">Onbepaalde duur</SelectItem>
+            <SelectItem value="BepaaldeDuur">Bepaalde duur</SelectItem>
+            <SelectItem value="Vervangingscontract">Vervangingscontract</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-foreground">Statuut</label>
+        <Select value={statuut} onValueChange={setStatuut}>
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Bediende">Bediende</SelectItem>
+            <SelectItem value="Arbeider">Arbeider</SelectItem>
+            <SelectItem value="Kader">Kader</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex justify-end gap-3 pt-2 border-t mt-2">
+        <Button type="button" variant="outline" onClick={onClose} className="px-6">
+          {t('common.annuleren')}
+        </Button>
+        <Button 
+          type="submit" 
+          disabled={createMutation.isPending || !persoonDef}
+          className="px-6 min-w-[120px] btn-primary"
+        >
+          {createMutation.isPending ? (
+            <div className="flex items-center gap-2">
+              <LoadingSpinner size="sm" className="text-white" />
+              {t('common.aanmakenBezig')}
+            </div>
+          ) : (
+            t('common.aanmaken')
+          )}
+        </Button>
+      </div>
+    </form>
+  )
+}
 
 export default function ContractenListPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [dialogOpen, setDialogOpen] = useState(searchParams.get('action') === 'new')
+
+  const handleOpenChange = (open: boolean) => {
+    setDialogOpen(open)
+    if (!open && searchParams.has('action')) {
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('action')
+      setSearchParams(newParams, { replace: true })
+    }
+  }
   
   const { data, isLoading } = useQuery({
     queryKey: ['contracten-global'],
@@ -95,10 +255,27 @@ export default function ContractenListPage() {
           </div>
           <h1 className="text-2xl font-bold text-primary">{t('nav.contracten')}</h1>
         </div>
-        <Button disabled>
-          <Plus className="mr-2 h-4 w-4" />
-          {t('common.toevoegen')}
-        </Button>
+        <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
+          <Button className="btn-primary" onClick={() => setDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            {t('common.toevoegen')}
+          </Button>
+          <DialogContent className="max-w-md bg-[var(--color-bg-page)] text-foreground border-border shadow-xl overflow-y-auto max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-prato-blue">
+                Nieuw Contract
+              </DialogTitle>
+            </DialogHeader>
+            <NieuwContractForm 
+              onClose={() => setDialogOpen(false)}
+              onSuccess={(id, _persoonId, werkgeverId) => {
+                setDialogOpen(false)
+                // Option: Navigate immediately to the new contract's details
+                navigate(contractPath(werkgeverId, id))
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="prato-card p-0">

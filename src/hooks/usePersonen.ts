@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { queryKeys } from '@/config/queryKeys'
 import {
+  fetchAllPersonen,
   fetchPersonen,
   fetchPersoon,
   updatePersoon,
@@ -10,6 +11,13 @@ import {
 import type { PersoonGewijzigd } from '@/types/types'
 import { generatePersoonGewijzigd } from '@/lib/messageGenerator'
 import { logBericht } from '@/lib/mock/berichten.mock'
+
+export function useAllPersonen() {
+  return useQuery({
+    queryKey: ['personen-global'],
+    queryFn: () => fetchAllPersonen(),
+  })
+}
 
 export function usePersonen(werkgeverId: string) {
   return useQuery({
