@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@theme {
+  --color-prato-blue: #3b5cc8;
+  --color-prato-blue-dark: #2f4eb0;
+  --color-prato-bg: #f3f4f6;
+  --color-prato-card: #ffffff;
+  --color-prato-sidebar: #1e1e1e;
+  --color-prato-text: #1a1a1a;
+  --color-prato-text-muted: #6b7280;
+  --color-prato-error: #991b1b;
+  --color-prato-border: #e5e7eb;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 226 57% 50%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 226 57% 50%;
+    --radius: 0.5rem;
+
+    /* Legacy compatibility and explicit theme variables */
+    --color-primary: #3b5cc8;
+    --color-primary-foreground: #ffffff;
+  }
+
+  /* Force light theme colors even if system is in dark mode for MVP stability */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --color-primary: #3b5cc8;
+      --color-primary-foreground: #ffffff;
+    }
+  }
+
+  * {
+    border-color: #e5e7eb;
+  }
+  
+  body {
+    background-color: #f3f4f6;
+    color: #1a1a1a;
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@layer components {
+  .prato-card {
+    background-color: white;
+    border-top: 4px solid #3b5cc8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+  }
+
+  .prato-brand {
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: white;
+    font-weight: 800;
+  }
+
+  .prato-dialog-content {
+    background-color: white !important;
+    color: #1a1a1a !important;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e5e7eb;
+  }
+
+  .btn-primary {
+    background-color: #3b5cc8 !important;
+    color: white !important;
+    font-weight: 600;
+    transition: background-color 0.2s;
+  }
+
+  .btn-primary:hover {
+    background-color: #2f4eb0 !important;
+  }
+
+  .btn-primary:disabled {
+    background-color: #9ca3af !important;
+    cursor: not-allowed;
+  }
+}
+
+@layer utilities {
+  .status-te-berekenen { background-color: #f3f4f6; color: #374151; }
+  .status-te-controleren { background-color: #fff7ed; color: #c2410c; }
+  .status-klaargezet { background-color: #eff6ff; color: #1d4ed8; }
+  .status-afgesloten { background-color: #f0fdf4; color: #15803d; }
+  .status-betaald { background-color: #14532d; color: #ffffff; }
+}
+
+/* Print styles */
+@media print {
+  .sidebar, .topbar { display: none !important; }
+  .bruto-netto-berekening { page-break-inside: avoid; }
+}
