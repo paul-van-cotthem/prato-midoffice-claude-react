@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "Prato Midoffice UI - Light Theme & High Contrast Update",
+  "//": "Git commit test",
   "type": "module",
   "scripts": {
     "dev": "vite",
